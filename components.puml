@@ -1,0 +1,111 @@
+@startuml as_is
+!theme materia
+
+skinparam default {
+    FontName Arial
+    FontSize 16
+}
+
+skinparam component {
+    Style uml2
+    BackgroundColor #f1f1f1
+    FontColor #000
+}
+
+skinparam note {
+    BackgroundColor #f1f1f1
+    FontColor #000
+}
+
+skinparam database {
+    BackgroundColor #f1f1f1
+}
+
+skinparam FrameBorderColor #596bed
+skinparam FrameBackgroundColor #f6fdff
+skinparam RectangleBorderColor #Lime
+skinparam RectangleBackgroundColor #TECHNOLOGY
+
+actor Client
+actor Analyst #aqua
+node Nginx #APPLICATION
+
+database SecretVault #Aquamarine
+
+frame Admin {
+    component Django
+    database Postgresql as AdminPostgres
+}
+
+frame MoviesAPI {
+    database ElasticSearch
+    database Redis as RedisCache
+    component FastAPI as MoviesFastAPI
+}
+
+frame ETL_Movies {
+    component Python as ETL_Postgres_Elastic
+}
+
+frame Auth {
+    component Flask
+    database Postgresql as AuthPostgres
+    database Redis as AuthRedis
+    component Jaeger
+
+    note bottom of [AuthRedis]
+        Blocklist token and Protection
+    end note
+}
+
+rectangle {
+    frame UGC {
+        component FastAPI as UGC_FastAPI #aqua
+        database Kafka #aqua
+        database ClickHouse #aqua
+        database Redis as ETL_Redis #aqua
+    }
+    
+    note top of [UGC_FastAPI] #fff8a2
+        Endpoints:
+        GET: user-film-timestamp
+        POST: user-film-timestamp
+    end note
+
+    frame ETL_UGC {
+        component Python as ETL_Kafka_Redis #aqua
+        component Python as ETL_Kafka_Click #aqua
+    }
+}
+
+note left of [Client] #OrangeRed
+    Аноним Юзер тоже должен 
+    как-то получать timestamp
+end note
+
+Client <-> Nginx
+Nginx <---> Django
+Django <-down-> AdminPostgres
+ETL_Postgres_Elastic <-down- AdminPostgres
+ETL_Postgres_Elastic -down-> ElasticSearch
+Nginx <---> MoviesFastAPI
+MoviesFastAPI <-down- ElasticSearch
+MoviesFastAPI <-down-> RedisCache
+Nginx <-down--> Flask
+Flask <-down-> AuthPostgres
+Flask <-down-> AuthRedis
+Nginx <-down-> Jaeger
+Flask .> Jaeger
+Nginx <-----> UGC_FastAPI
+UGC_FastAPI -down-> Kafka
+UGC_FastAPI <-down- ETL_Redis
+ETL_Kafka_Click <-up- Kafka
+ETL_Kafka_Click -up-> ClickHouse
+ETL_Kafka_Redis <-up- Kafka
+ETL_Kafka_Redis -up-> ETL_Redis
+Analyst <-- ClickHouse
+Flask <.. SecretVault: SekretKey and PubKey
+MoviesFastAPI <. SecretVault: PubKey
+UGC_FastAPI <. SecretVault: PubKey
+
+@enduml 
