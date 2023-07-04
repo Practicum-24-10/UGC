@@ -63,7 +63,7 @@ rectangle {
         component FastAPI as UGC_FastAPI #aqua
         database Kafka #aqua
         database ClickHouse #aqua
-        database Redis as ETL_Redis #aqua
+        database Redis as UGC_Redis #aqua
     }
     
     note top of [UGC_FastAPI] #fff8a2
@@ -73,15 +73,9 @@ rectangle {
     end note
 
     frame ETL_UGC {
-        component Python as ETL_Kafka_Redis #aqua
         component Python as ETL_Kafka_Click #aqua
     }
 }
-
-note left of [Client] #OrangeRed
-    Аноним Юзер тоже должен 
-    как-то получать timestamp
-end note
 
 Client <-> Nginx
 Nginx <---> Django
@@ -95,17 +89,15 @@ Nginx <-down--> Flask
 Flask <-down-> AuthPostgres
 Flask <-down-> AuthRedis
 Nginx <-down-> Jaeger
-Flask .> Jaeger
+Flask -> Jaeger
 Nginx <-----> UGC_FastAPI
 UGC_FastAPI -down-> Kafka
-UGC_FastAPI <-down- ETL_Redis
+UGC_FastAPI <-down-> UGC_Redis
 ETL_Kafka_Click <-up- Kafka
 ETL_Kafka_Click -up-> ClickHouse
-ETL_Kafka_Redis <-up- Kafka
-ETL_Kafka_Redis -up-> ETL_Redis
 Analyst <-- ClickHouse
 Flask <.. SecretVault: SekretKey and PubKey
 MoviesFastAPI <. SecretVault: PubKey
 UGC_FastAPI <. SecretVault: PubKey
 
-@enduml 
+@enduml
