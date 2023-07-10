@@ -48,4 +48,4 @@ class MixinModel(AbstractMixin):
         :param _id: id для доступа
         :param data: данные
         """
-        pass
+        self.storage.send(key=_id, value=data)

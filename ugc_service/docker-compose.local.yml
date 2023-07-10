@@ -5,6 +5,8 @@ services:
       image: confluentinc/cp-zookeeper:7.4.0
       hostname: zookeeper
       container_name: zookeeper
+      ports:
+        - "2181:2181"
       environment:
         ZOOKEEPER_CLIENT_PORT: 2181
         ZOOKEEPER_TICK_TIME: 2000
@@ -15,6 +17,9 @@ services:
       container_name: broker
       depends_on:
         - zookeeper
+      ports:
+        - "9092:9092"
+        - "9101:9101"
       healthcheck:
         test: kafka-topics --list --bootstrap-server localhost:9092
         interval: 10s
@@ -45,17 +50,25 @@ services:
       volumes:
         - ugc_redis_volume:/data
       healthcheck:
-        test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+        test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
         interval: 1s
         timeout: 3s
         retries: 5
     ugc:
       build: .
       image: ugc-image
+      volumes:
+        - ./:/app/ugc_service
       env_file:
         - .env
       healthcheck:
-        test: ["CMD", "curl", "--fail", "http://localhost:8000/api/openapi"]
+        test:
+          [
+            "CMD",
+            "curl",
+            "--fail",
+            "http://localhost:8000/api/openapi"
+          ]
         interval: 15s
         timeout: 5s
         retries: 5
@@ -66,6 +79,7 @@ services:
           condition: service_healthy
       expose:
         - 8000
+      command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 
     nginx:
       image: nginx:1.23.4-alpine
@@ -79,5 +93,5 @@ services:
         - "80:80"
 
 volumes:
-    ugc_redis_volume:
-      name: ugc_redis_volume
+  ugc_redis_volume:
+    name: ugc_redis_volume
