@@ -3,13 +3,15 @@ import logging
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from ugc_service.src.auth.abc_key import RsaKey
+
 from ugc_service.src.api.v1 import views
-from ugc_service.src.core.config import AppSettings, PUBLIC_KEY
 from ugc_service.src.auth import rsa_key
+from ugc_service.src.auth.abc_key import RsaKey
+from ugc_service.src.core.config import PUBLIC_KEY, AppSettings
 from ugc_service.src.core.logger import LOGGING
-from ugc_service.src.db import redis_db
+from ugc_service.src.db import kafka_db, redis_db
 from ugc_service.src.db.cache import RedisCache
+from ugc_service.src.db.storage import KafkaStorage
 
 config = AppSettings()
 app = FastAPI(
@@ -23,7 +25,10 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup():
     redis_db.redis = RedisCache(host=config.redis_host, port=config.redis_port)
-    rsa_key.pk = RsaKey(path=PUBLIC_KEY, algorithms=['RS256'])
+    kafka_db.kf = KafkaStorage(
+        host=config.kafka_host, port=config.kafka_port, topic=config.kafka_topic
+    )
+    rsa_key.pk = RsaKey(path=PUBLIC_KEY, algorithms=["RS256"])
 
 
 @app.on_event("shutdown")
