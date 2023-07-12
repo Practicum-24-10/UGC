@@ -54,7 +54,7 @@ services:
       container_name: clickhouse-node1
       build:
         context: .
-        dockerfile: ./click_house_config/Dockerfile.cl1
+        dockerfile: ./configs/click_house_config/Dockerfile.cl1
       hostname: clickhouse-node1
       ports:
         - "8123:8123"
@@ -78,7 +78,7 @@ services:
     clickhouse-node3:
       build:
         context: .
-        dockerfile: ./click_house_config/Dockerfile.cl3
+        dockerfile: ./configs/click_house_config/Dockerfile.cl3
       container_name: clickhouse-node3
       hostname: clickhouse-node3
       volumes:
