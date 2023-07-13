@@ -42,10 +42,10 @@ class MixinModel(AbstractMixin):
         """
         await self.cache.set(_id, data)
 
-    async def _put_to_storage(self, _id: str, data: str):
+    async def _put_to_storage(self, key: str, user_id, film_id, data: str):
         """
         Сохраняет в хранилища данные
         :param _id: id для доступа
         :param data: данные
         """
-        self.storage.send(key=_id, value=data)
+        self.storage.send(key=key, user_id=user_id, film_id=film_id, value=data)

@@ -17,7 +17,7 @@ class ViewsService(MixinModel):
     async def add_new_data(self, user_id: UUID, film_id: UUID, timestamp: int):
         mixin_id = f"{user_id}:{film_id}"
         try:
-            await self._put_to_storage(mixin_id, str(timestamp))
+            await self._put_to_storage(mixin_id, user_id, film_id, str(timestamp))
             await self._put_to_cache(mixin_id, str(timestamp))
             return True
         except Exception as er:
