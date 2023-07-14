@@ -1,0 +1,2 @@
+FROM yandex/clickhouse-server
+ADD ./configs/click_house_config/click1node.sql /docker-entrypoint-initdb.d
