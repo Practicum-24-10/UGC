@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from aioredis import Redis
+from redis import asyncio as aioredis
 
 
 class AbstractCache(ABC):
@@ -19,7 +19,7 @@ class AbstractCache(ABC):
 
 class RedisCache(AbstractCache):
     def __init__(self, host: str, port: int):
-        self._connect = Redis(host=host, port=port)
+        self._connect = aioredis.Redis(host=host, port=port)
 
     async def get(self, _id: str):
         return await self._connect.get(name=_id)
