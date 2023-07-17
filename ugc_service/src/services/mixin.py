@@ -48,4 +48,4 @@ class MixinModel(AbstractMixin):
         :param _id: id для доступа
         :param data: данные
         """
-        self.storage.send(key=key, user_id=user_id, film_id=film_id, value=data)
+        await self.storage.send(key=key, user_id=user_id, film_id=film_id, value=data)
