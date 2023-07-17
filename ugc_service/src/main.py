@@ -35,6 +35,8 @@ async def startup():
 async def shutdown():
     if redis_db.redis:
         await redis_db.redis.close()
+    if kafka_db.kf:
+        await kafka_db.kf.stop()
 
 
 app.include_router(views.router, prefix="/api/v1/views", tags=["views"])
