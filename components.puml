@@ -72,9 +72,6 @@ rectangle {
         POST: user-film-timestamp
     end note
 
-    frame ETL_UGC {
-        component Python as ETL_Kafka_Click #aqua
-    }
 }
 
 Client <-> Nginx
@@ -93,8 +90,7 @@ Flask -> Jaeger
 Nginx <-----> UGC_FastAPI
 UGC_FastAPI -down-> Kafka
 UGC_FastAPI <-down-> UGC_Redis
-ETL_Kafka_Click <-up- Kafka
-ETL_Kafka_Click -up-> ClickHouse
+Kafka -up-> ClickHouse: Kafka table engine
 Analyst <-- ClickHouse
 Flask <.. SecretVault: SekretKey and PubKey
 MoviesFastAPI <. SecretVault: PubKey

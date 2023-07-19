@@ -17,3 +17,6 @@ docker compose -f ugc_service/docker-compose.yml -f ugc_service/docker-compose.o
 docker compose -f ugc_service/tests/functional/docker-compose.yml up
 ```
 - Для запуска локальных тестов необходимо создать файл .env в директории ugc_service/tests/functional/ по примеру ugc_service/tests/functional/.env.dev.example и запустить приложение в Docker
+
+### Диаграмма компонентов
+![Диаграмма компонентов](https://github.com/Practicum-24-10/UGC/blob/main/components.png)
